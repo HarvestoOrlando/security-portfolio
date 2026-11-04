@@ -107,10 +107,12 @@ Submitted and confirmed as duplicates across an active bug bounty program (ident
 ### 🔴 High
 
 **Stale Oracle Enables Flash Loan Drain**
+- Protocol: Xpert Finance
 - Class: Oracle Manipulation · Chain: Base
 - Impact: Missing timestamp validation on price feed allowed borrowing against inflated stale collateral prices, enabling full lending market drainage via flash loan in a single transaction.
 
 **First Depositor Share Inflation Attack**
+- Protocol: Xpert Finance
 - Class: Math Precision (ERC4626 Inflation) · Chain: Base
 - Impact: Absence of minimum liquidity protection allowed first depositors to manipulate share price and steal subsequent depositors' full principal.
 
