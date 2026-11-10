@@ -38,7 +38,7 @@ Available for private security audits, collaboration, and security-focused techn
 
 | Severity | Confirmed (Bug Bounty) | Independent Research |
 |---|---|---|
-| Critical | — | 3+ |
+| Critical | — | 2+ |
 | High | 3 ([HackenProof](https://hackenproof.com/hackers/HarvestoOrlando)) | 14+ |
 | Medium | — | 30+ |
 
