@@ -94,27 +94,22 @@ Submitted and confirmed as duplicates across an active bug bounty program (ident
 - Chain: Polkadot (Substrate/Rust)
 - Impact: A default zero value on first consensus update allowed a relayer to claim rewards for all blocks since genesis in a single transaction, draining the protocol treasury entirely. On-chain precondition confirmed satisfied.
 
-**Novel "Harvest-the-Pair" Attack (Post-Exploit Analysis)**
-- Class: Token Transfer Logic / Novel Attack Class
-- Chain: BSC
-- Impact: A filter removal in a protocol update enabled zero-value `transferFrom` calls to trigger unintended harvest logic on a liquidity pair, draining reserves. $377K+ USDT drained in the confirmed exploit. Classified as a novel vulnerability class.
-
 **Mint Callback Reentrancy Bypasses Supply Cap**
 - Protocol: Ponzi Panthers (NFT)
 - Class: Reentrancy / Access Control · Chain: Ethereum
-- Impact: A mint function's supply-cap check runs before the cap counter updates, letting a malicious recipient contract reenter mid-mint and mint tokens beyond the collection's advertised maximum supply.
+- Impact: A mint function's supply-cap accounting can be bypassed through a reentrant call, allowing mints beyond the collection's advertised maximum supply.
 
 ### 🔴 High
 
 **Stale Oracle Enables Flash Loan Drain**
 - Protocol: Xpert Finance
 - Class: Oracle Manipulation · Chain: Base
-- Impact: Missing timestamp validation on price feed allowed borrowing against inflated stale collateral prices, enabling full lending market drainage via flash loan in a single transaction.
+- Impact: An unvalidated price feed let borrowing happen against an outdated price, draining the lending market in a single transaction.
 
 **First Depositor Share Inflation Attack**
 - Protocol: Xpert Finance
 - Class: Math Precision (ERC4626 Inflation) · Chain: Base
-- Impact: Absence of minimum liquidity protection allowed first depositors to manipulate share price and steal subsequent depositors' full principal.
+- Impact: Absence of a minimum-liquidity safeguard let an early depositor manipulate share pricing and claim later depositors' principal.
 
 **Permanent Liquidation DoS via Division-by-Zero**
 - Class: Math Precision / DoS · Chain: Ethereum
@@ -155,17 +150,20 @@ Submitted and confirmed as duplicates across an active bug bounty program (ident
 **Spoofable Caller Identity Enables Unconsented Fund Destruction**
 - Protocol: THORChain
 - Class: Access Control / Authorization Bypass · Chain: Ethereum
-- Impact: A router function trusts a caller-supplied identity instead of verifying the real message sender, letting an intermediary contract act on a victim's full token balance without consent.
+- Impact: A verification gap in a router function let an unrelated contract act against a victim's full token balance without consent, destroying funds with no attacker benefit.
+- Status: Responsibly disclosed to the team (Aug 2026).
 
 **Codeless Address Accepted as a Successful External Call**
 - Protocol: THORChain
 - Class: Access Control / Unchecked External Call · Chain: Ethereum
-- Impact: A swap-output function treats a call to an address with no deployed code as a successful external swap, stranding the swap's funds to that address instead of completing the trade.
+- Impact: A swap-output path can mistake a failed external call for a successful one, stranding the swap's funds instead of completing the trade.
+- Status: Responsibly disclosed to the team (Aug 2026).
 
 **Fixed-Price Oracle Enables Cross-Collateral Reserve Drain**
 - Protocol: Vetro Protocol
 - Class: Oracle Manipulation / Fixed Price · Chain: Ethereum
-- Impact: A collateral asset priced by a constant value instead of a live oracle lets a depegged deposit be minted and redeemed at full par against the protocol's healthy reserve.
+- Impact: A collateral oracle that doesn't track live price lets a devalued deposit be exchanged at full value against the protocol's healthy reserve.
+- Status: Responsibly disclosed to the team (Aug 2026).
 
 ### 🟡 Medium (Selected)
 
@@ -173,8 +171,9 @@ _A representative sample. Full list available on request._
 
 **Missing Slippage Protection in Hook Swap Path**
 - Protocol: Alphix
-- Class: Slippage / MEV · Chain: Ethereum (Uniswap V4 hook)
+- Class: Slippage / MEV · Chain: Base (Uniswap V4 hook)
 - Impact: No price slippage check before JIT-triggered swaps, exposing users to sandwich attacks. Confirmed valid by protocol team.
+- PoC: [`poc/alphix-jit-slippage`](poc/alphix-jit-slippage) — Foundry Base mainnet-fork test (`[PASS]`) proving the live hook's JIT path sizes liquidity from an unguarded `sqrtPriceX96`, with captured trace.
 
 **Oracle Staleness Bypass via Zero `staleTime`**
 - Class: Oracle / Input Validation
@@ -219,6 +218,15 @@ _A representative sample. Full list available on request._
 **EIP-712 Signature Replay Across Bridge Deployments**
 - Class: Signature Replay
 - Impact: Domain separator not bound to contract address, making valid withdrawal signatures replayable on any additional bridge deployment.
+
+## Exploit Analysis
+
+_Post-mortem breakdowns of live exploits that already happened on-chain — not findings I discovered or disclosed. Included to demonstrate root-cause analysis methodology._
+
+**Novel "Harvest-the-Pair" Attack**
+- Class: Token Transfer Logic / Novel Attack Class
+- Chain: BSC
+- Impact: A filter removal in a protocol update enabled zero-value `transferFrom` calls to trigger unintended harvest logic on a liquidity pair, draining reserves. $377K+ USDT drained in the confirmed exploit. Classified as a novel vulnerability class.
 
 ## Tools & Environment
 
